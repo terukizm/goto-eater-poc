@@ -4,25 +4,6 @@
     {
       "type": "Feature",
       "properties": {
-        "marker-color": "#72CB7F",
-        "marker-size": "large",
-        "marker-symbol": "restaurant",
-        "description": "!!!!!!!!!!肉のマルコウ!!!!!!!",
-        "店舗名": "肉のマルコウ",
-        "ジャンル": "和食",
-        "電話": "0283-23-8010",
-        "住所": "栃木県 佐野市 植上町１５８２−１",
-        "GoogleMap": "https://www.google.com/maps/search/?q=栃木県 佐野市 肉のマルコウ",
-        "国土地理院地図": "https://maps.gsi.go.jp/#17/36.303669/139.586288/"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [139.586288, 36.303669]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
         "marker-color": "#C7B949",
         "marker-size": "large",
         "marker-symbol": "",
