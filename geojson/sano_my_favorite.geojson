@@ -1,0 +1,50 @@
+﻿{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "marker-color": "#72CB7F",
+        "marker-size": "large",
+        "marker-symbol": "restaurant",
+        "description": "!!!!!!!!!!肉のマルコウ!!!!!!!",
+        "店舗名": "肉のマルコウ",
+        "ジャンル": "和食",
+        "電話": "0283-23-8010",
+        "住所": "栃木県 佐野市 植上町１５８２−１",
+        "GoogleMap": "https://www.google.com/maps/search/?q=栃木県 佐野市 肉のマルコウ",
+        "国土地理院地図": "https://maps.gsi.go.jp/#17/36.303669/139.586288/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.586288,
+          36.303669
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "marker-color": "#C7B949",
+        "marker-size": "large",
+        "marker-symbol": "",
+        "description": "らーめん大金 ddddddddd",
+        "店舗名": "らーめん大金",
+        "ジャンル": "麺類",
+        "電話": "0283-23-1989",
+        "住所": "栃木県 佐野市 大橋町3229-7",
+        "GoogleMap": "https://www.google.com/maps/search/?q=栃木県 佐野市 らーめん大金",
+        "ホームページ": "https://localplace.jp/t200329502/",
+        "国土地理院地図": "https://maps.gsi.go.jp/#17/36.307547/139.563414/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.56342,
+          36.30754
+        ]
+      }
+    }
+  ]
+}
