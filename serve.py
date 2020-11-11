@@ -3,12 +3,13 @@
 
 # usage:
 # $ python2 serve.py
-# -> http://localhost:8000/
+# -> http://localhost:8001/
 
 import SimpleHTTPServer
 import SocketServer
 
-PORT = 8000
+# geolonicaのAPIがhttp://localhost:{PORT}/でアクセス元制限かけてあるので注意
+PORT = 18000
 Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
 httpd = SocketServer.TCPServer(("", PORT), Handler)
 
