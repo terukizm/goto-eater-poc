@@ -77,11 +77,14 @@ const map = new geolonia.Map({
 // Point用各種イメージを読み込み
 // アイコン画像設定
 // MEMO?: https://qiita.com/kkdd/items/0eb24549d10e875c1fa5
-map.loadImage('https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png', function (error, res) {
-  map.addImage('icon-image-sample1', res);
+map.loadImage('/img/image1.png', function (error, res) {
+  map.addImage('icon-image-1', res);
 });
-map.loadImage('https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Cat_silhouette.svg/400px-Cat_silhouette.svg.png', function (error, res) {
-  map.addImage('sample2_icon', res);
+map.loadImage('https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png', function (error, res) {
+  map.addImage('icon-image-2', res);
+});
+map.loadImage('/img/ramen.png', function (error, res) {
+  map.addImage('icon-ramen', res);
 });
 
 // マウスオーバーでポインタを人差し指にする
@@ -124,47 +127,88 @@ const click_point_function = (e) => {
 }
 
 
-// TODO: 飲食店のジャンル別にレイヤーを分けて、それぞれ別のアイコンで表示させ、出し分けできるようにする
-// 例: ジャンルが「ラーメン・餃子」と「和食・寿司」の店だけ表示させる
-//
-// 参考:
-// https://docs.mapbox.com/jp/mapbox-gl-js/example/toggle-layers/
-// https://docs.mapbox.com/jp/mapbox-gl-js/example/filter-markers-by-input/
-
-
 map.on('load', function () {
-  const layer_id = 'layer1';
-  // GeoJSON読み込み
-  map.addSource('datasource-sample1', {
-    type: 'geojson',
-    data: place.geojson
-    // data: '/geojson/sample3.geojson'
-  });
+  const prefix = '09_tochigi';
+  const genre_list = [
+    'all',
+    '洋食',
+    'その他',
+    '居酒屋',
+    '中華料理',
+    '和食・寿司',
+    'ラーメン・餃子',
+    'うどん・そば・丼',
+    'カフェ・スイーツ',
+    'ファーストフード',
+    'バー・ダイニングバー',
+    'フレンチ・イタリアン',
+    'すき焼き・しゃぶしゃぶ',
+    '焼肉・ホルモン・韓国料理',
+    'ファミリーレストラン・食堂',
+    'アジア・エスニック・各国料理',
+  ]
 
-  // レイヤー設定
-  map.addLayer({
-    "id": layer_id,
-    "source": "datasource-sample1",
-    "type": "symbol",
-    "layout": {
-      // アイコン
-      "icon-image": "icon-image-sample1",
-      "icon-allow-overlap": true, // これ入れとかないとlatlngが重なったときにアイコンが確実に上書きされてしまう
-      "icon-size": 0.8,
-      // アイコンの下にshop_nameをラベル表示させる
-      // (フォント指定まわりドキュメントがあんまない)
-      'text-field': "{shop_name}",
-      "text-font": ["Noto Sans Regular"], // geoloniaで使えるフォント is 謎...
-      'text-radial-offset': 1.8,
-      // MEMO: 以下の設定入れとくとlatlngが重なったときにわかりやすい
-      'text-variable-anchor': ['top', 'bottom', 'left', 'right'], // アイコンの上下左右にラベル表示
-      // 'text-variable-anchor': ['top'], // MEMO: ホントはこっちだけでいい
-      'text-size': 12
-    },
-  });
+  genre_list.forEach(function (genre) {
+    const layer_id = `layer-${genre}`;
 
-  // 各種イベントを設定
-  map.on('click', layer_id, click_point_function);
-  map.on('mouseenter', layer_id, mouse_enter_function);
-  map.on('mouseleave', layer_id, mouse_leave_function);
+    // GeoJSON読み込み
+    map.addSource(`datasource-${layer_id}`, {
+      type: 'geojson',
+      data: `/geojson/geojson/${prefix}_${genre}.geojson`
+      // data: '/geojson/sample3.geojson'
+    });
+
+    // アイコン設定
+    map.loadImage('https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png', function (error, res) {
+      map.addImage(`icon-image-${layer_id}`, res);
+    });
+
+    // レイヤー設定
+    map.addLayer({
+      "id": layer_id,
+      "source": `datasource-${layer_id}`,
+      "type": "symbol",
+      "layout": {
+        'visibility': genre === 'all' ? 'visible' : 'none',
+        // アイコン
+        "icon-image": genre === 'all' ? 'icon-image-2' : 'icon-image-1',  // 雑
+        "icon-allow-overlap": true, // これ入れとかないとlatlngが重なったときにアイコンが確実に上書きされてしまう
+        "icon-size": 0.8,
+        // アイコンの下にshop_nameをラベル表示させる(フォント指定まわりドキュメントがあんまない)
+        'text-field': "{shop_name}",
+        "text-font": ["Noto Sans Regular"], // geoloniaで使えるフォント is 謎...
+        'text-radial-offset': 1.8,
+        // MEMO: 以下の設定入れとくとlatlngが重なったときにわかりやすい
+        'text-variable-anchor': ['top', 'bottom', 'left', 'right'], // アイコンの上下左右にラベル表示
+        // 'text-variable-anchor': ['top'], // MEMO: ホントはこっちだけでいい
+        'text-size': 12
+      },
+    });
+
+    // ジャンル別メニューの設定
+    // MEMO: allとかの排他制御とかは作り込んでない、雑い
+    const link = document.createElement('a');
+    link.href = '#';
+    link.className = genre === 'all' ? 'active' : '';
+    link.textContent = genre;
+    link.onclick = function (e) {
+      const clickedLayer = 'layer-' + this.textContent;
+      e.preventDefault();
+      e.stopPropagation();
+
+      if ( map.getLayoutProperty(clickedLayer, 'visibility') === 'visible') {
+        map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+        this.className = '';
+      } else {
+        this.className = 'active';
+        map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+      }
+    };
+    document.getElementById('menu').appendChild(link);
+
+    // 各種イベントを設定
+    map.on('click', layer_id, click_point_function);
+    map.on('mouseenter', layer_id, mouse_enter_function);
+    map.on('mouseleave', layer_id, mouse_leave_function);
+  });
 });
