@@ -22,6 +22,7 @@ html, body {
   width: 150px;
   border: 1px solid rgba(0, 0, 0, 0.4);
   font-family: 'Noto Sans Regular', sans-serif;
+  visibility: hidden;
 }
 
 #menu a {
@@ -41,15 +42,15 @@ html, body {
 }
 
 #menu a:hover {
-  background-color: #f8f8f8;
+  background-color: #f0f0f0;
   color: #404040;
 }
 
 #menu a.active {
-  background-color: #db3f3f;
+  background-color: #b33b3b;
   color: #ffffff;
 }
 
 #menu a.active:hover {
-  background: #a43030;
+  background: #eb1717;
 }

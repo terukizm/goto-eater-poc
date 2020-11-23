@@ -14,29 +14,25 @@ const place_list = {
   '栃木県佐野市': {
     'coordinates': [139.580, 36.305], // [lng(経度), lat(緯度)]  なので注意
     'zoom': 13,
-    'geojson': '/geojson/geojson/09_tochigi_all.geojson',
+    'prefix': '09_tochigi',
     // 'geojson': '/geojson/geojson/09_tochigi_ラーメン・餃子.geojson',
   },
   '大阪駅周辺': {
     'coordinates': [135.4959506, 34.7024854],
     'zoom': 16,
     // 'geojson': '/geojson/geojson/27_osaka_all.geojson',
-    'geojson': '/geojson/geojson/27_osaka_お好み焼き・たこ焼き.geojson',
   },
   '山梨県甲府市': {
     'coordinates': [138.5687848, 35.666674],
     'zoom': 16,
-    'geojson': '/geojson/geojson/19_yamanashi_all.geojson',
   },
   '埼玉県草加市': {
     'coordinates': [139.777649, 35.812065],
     'zoom': 14,
-    'geojson': '/geojson/geojson/11_saitama_all.geojson',
   },
   '群馬県高崎駅周辺': {
     'coordinates': [139.0126623, 36.3228267],
     'zoom': 14,
-    'geojson': '/geojson/geojson/10_gunma_all.geojson',
   },
   '奈良県曽爾村': {
     'coordinates': [136.1092048, 34.4905156],
@@ -51,7 +47,7 @@ const place_list = {
   '亀戸': {
     'coordinates': [139.8265658, 35.6973225],
     'zoom': 15,
-    'geojson': '/geojson/geojson/kameido_all.geojson',
+    'prefix': '13_tokyo',
   },
 };
 const place = place_list['栃木県佐野市']
@@ -74,17 +70,27 @@ const map = new geolonia.Map({
   unit: 'metric'
 }));
 
-// Point用各種イメージを読み込み
-// アイコン画像設定
-// MEMO?: https://qiita.com/kkdd/items/0eb24549d10e875c1fa5
-map.loadImage('/img/image1.png', function (error, res) {
-  map.addImage('icon-image-1', res);
-});
+const genres = {
+  1: '居酒屋・バー・ダイニングバー・バル',
+  2: '和食・割烹・寿司',
+  3: '洋食・フレンチ・イタリアン',
+  4: '中華',
+  5: 'うどん・そば・ラーメン・餃子・丼',
+  6: 'カレー・アジア・エスニック・各国料理',
+  7: 'ステーキ・焼肉・ホルモン・すき焼き・しゃぶしゃぶ',
+  8: 'ファーストフード・ファミレス・食堂',
+  9: 'カフェ・スイーツ',
+  10: 'その他',
+}
+
+// Marker用アイコンを読み込み
+for (const [key, _] of Object.entries(genres)) {
+  map.loadImage(`/img/genre${key}.png`, function (error, res) {
+    map.addImage(`icon-image-genre${key}`, res);
+  });
+}
 map.loadImage('https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png', function (error, res) {
-  map.addImage('icon-image-2', res);
-});
-map.loadImage('/img/ramen.png', function (error, res) {
-  map.addImage('icon-ramen', res);
+  map.addImage('icon-image-common', res);
 });
 
 // マウスオーバーでポインタを人差し指にする
@@ -126,73 +132,53 @@ const click_point_function = (e) => {
     .addTo(map);
 }
 
-
 map.on('load', function () {
-  const prefix = '09_tochigi';
-  const genre_list = [
-    'all',
-    '洋食',
-    'その他',
-    '居酒屋',
-    '中華料理',
-    '和食・寿司',
-    'ラーメン・餃子',
-    'うどん・そば・丼',
-    'カフェ・スイーツ',
-    'ファーストフード',
-    'バー・ダイニングバー',
-    'フレンチ・イタリアン',
-    'すき焼き・しゃぶしゃぶ',
-    '焼肉・ホルモン・韓国料理',
-    'ファミリーレストラン・食堂',
-    'アジア・エスニック・各国料理',
-  ]
+  // TODO: functionまわりをきちんと(jsダメな人のクソ実装なおす)
+  const prefix = place.prefix;
 
-  genre_list.forEach(function (genre) {
-    const layer_id = `layer-${genre}`;
+  for (const [genre_id, genre_name] of Object.entries(genres)) {
+    const layer_id = `layer-${genre_id}`;
 
     // GeoJSON読み込み
-    map.addSource(`datasource-${layer_id}`, {
+    map.addSource(`datasource-${genre_id}`, {
       type: 'geojson',
-      data: `/geojson/geojson/${prefix}_${genre}.geojson`
-      // data: '/geojson/sample3.geojson'
-    });
-
-    // アイコン設定
-    map.loadImage('https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png', function (error, res) {
-      map.addImage(`icon-image-${layer_id}`, res);
+      data: `/geojson/geojson/${prefix}/genre${genre_id}.geojson`
     });
 
     // レイヤー設定
     map.addLayer({
       "id": layer_id,
-      "source": `datasource-${layer_id}`,
+      "source": `datasource-${genre_id}`,
       "type": "symbol",
       "layout": {
-        'visibility': genre === 'all' ? 'visible' : 'none',
+        'visibility': genre_name === 'all' ? 'visible' : 'none',
         // アイコン
-        "icon-image": genre === 'all' ? 'icon-image-2' : 'icon-image-1',  // 雑
+        "icon-image": genre_name === 'all' ? 'icon-image-common' : `icon-image-genre${genre_id}`,  // 雑
         "icon-allow-overlap": true, // これ入れとかないとlatlngが重なったときにアイコンが確実に上書きされてしまう
         "icon-size": 0.8,
         // アイコンの下にshop_nameをラベル表示させる(フォント指定まわりドキュメントがあんまない)
         'text-field': "{shop_name}",
         "text-font": ["Noto Sans Regular"], // geoloniaで使えるフォント is 謎...
         'text-radial-offset': 1.8,
-        // MEMO: 以下の設定入れとくとlatlngが重なったときにわかりやすい
+        // MEMO: 以下の設定入れとくとlatlngが近く、描画でテキストラベルが重なったときに
+        // ラベル位置を再配置してくれる。特に本アプリの場合、ジオコーダの解像度が低いので
+        // latlngが重複してしまう可能性が非常に高いため、必須
         'text-variable-anchor': ['top', 'bottom', 'left', 'right'], // アイコンの上下左右にラベル表示
-        // 'text-variable-anchor': ['top'], // MEMO: ホントはこっちだけでいい
         'text-size': 12
       },
     });
 
-    // ジャンル別メニューの設定
-    // MEMO: allとかの排他制御とかは作り込んでない、雑い
+    // 左側に表示されるジャンル別メニューの設定
+    // MEMO: allとかの排他制御とかは作り込んでない(あった方がいい気がする)
+    // -> そもそもallは_all.geojsonを読むのではなく全選択表示にすべきなのでは、
+    // 全選択/全選択解除は実際に触ってるとしばしばほしくなる // TODO
+    // 初期状態は全選択表示状態でよい？ (現在は無選択なので微妙)
     const link = document.createElement('a');
     link.href = '#';
-    link.className = genre === 'all' ? 'active' : '';
-    link.textContent = genre;
+    link.className = genre_id === 'all' ? 'active' : '';
+    link.textContent = genre_name;
     link.onclick = function (e) {
-      const clickedLayer = 'layer-' + this.textContent;
+      const clickedLayer = layer_id;
       e.preventDefault();
       e.stopPropagation();
 
@@ -210,5 +196,8 @@ map.on('load', function () {
     map.on('click', layer_id, click_point_function);
     map.on('mouseenter', layer_id, mouse_enter_function);
     map.on('mouseleave', layer_id, mouse_leave_function);
-  });
+  }
+
+  document.getElementById('menu').style.visibility = 'visible';
 });
+
