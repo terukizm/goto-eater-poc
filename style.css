@@ -18,7 +18,6 @@ html, body {
   z-index: 1;
   top: 8px;
   left: 10px;
-  border-radius: 3px;
   width: 150px;
   border: 1px solid rgba(0, 0, 0, 0.4);
   font-family: 'Noto Sans Regular', sans-serif;
@@ -29,6 +28,7 @@ html, body {
   font-size: 13px;
   color: #404040;
   display: block;
+  height: 40px;
   margin: 0;
   padding: 0;
   padding: 10px;
