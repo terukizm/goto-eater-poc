@@ -10,10 +10,14 @@ html, body {
   height: 80%;
 }
 
+.mapboxgl-popup {
+  max-width: 400px;
+}
+
 /* side menu */
 
 #menu {
-  background: #fff;
+  background: #ffffff;
   position: absolute;
   z-index: 1;
   top: 8px;
@@ -42,12 +46,12 @@ html, body {
 }
 
 #menu a:hover {
-  background-color: #f0f0f0;
+  background: #f0f0f0;
   color: #404040;
 }
 
 #menu a.active {
-  background-color: #b33b3b;
+  background: #b33b3b;
   color: #ffffff;
 }
 
