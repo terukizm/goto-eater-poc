@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>GOTO EATER or 後藤イー太</title>
+  <title>後藤イー太</title>
   <link rel="stylesheet" href="./style.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <!-- 用意してないよ
@@ -16,14 +16,26 @@
   <nav id="menu"></nav>
   <div id="map"></div>
 
-  <h1>GOTO EATER or 後藤イー太</h1>
+  <h1 id="goto_title">後藤イー太</h1>
   <p>注意だよ:</p>
   <ul>
     <li><a href="http://newspat.csis.u-tokyo.ac.jp/geocode/modules/dams/index.php?content_id=1">DAMS</a>と<a href="https://nlftp.mlit.go.jp/isj/index.html">国土交通省の位置参照情報</a>を使ってて、ジオコーディング精度に限界があるから場所は参考程度にね</li>
   </ul>
 
+  <h2>雑リンク</h2>
+  <ul>
+    <li><a href="./?place=亀戸">KMID</a></li>
+    <li><a href="./?place=佐野市&mode0">佐野(デバッグモード)</a></li>
+    <li><a href="./?place=沖縄市">OKINAWA</a></li>
+  </ul>
+
+  <h3>元データが重複してるやつ</h3>
+  <textarea id="error_json_duplicated" style="width: 95%; height: 20em;"></textarea>
+  <h3>元データがエラーになってるやつ</h3>
+  <textarea id="error_json_error" style="width: 95%; height: 20em;"></textarea>
+
   <script type="text/javascript" src="https://api.geolonia.com/v1/embed?geolonia-api-key=cc6d229f94224d9290b5e6018fc302d4"></script>
-  <script src="https://cdn.geolonia.com/community-geocoder.js"></script>
-  <script src="./main.js"></script>
+  <script type="text/javascript" src="https://cdn.geolonia.com/community-geocoder.js"></script>
+  <script type="text/javascript" src="./main.js"></script>
 </body>
 </html>

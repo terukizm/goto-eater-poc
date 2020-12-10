@@ -7,6 +7,7 @@
 // @see https://docs.geolonia.com/
 // @see https://docs.mapbox.com/jp/mapbox-gl-js/example/
 
+
 // 適当に決めた10ジャンル
 // MEMO: テキストにしたときにちょっと色薄い
 //
@@ -20,7 +21,6 @@
 // 8	ファーストフード・ファミレス	#85BECC
 // 9	カフェ/スイーツ	#FFA1C4
 // 10	その他	#808080
-
 const genres = {
   1: {
     name: '居酒屋・バー・バル',
@@ -64,15 +64,69 @@ const genres = {
   }
 }
 
+// @see ISO 3166-2
+//
+// ライブラリ探して使い方読むよりベタ書きの方が早そうだったので…
+// https://so-zou.jp/web-app/tech/data/code/japanese-prefecture.htm#no1
+const prefs = {
+  "北海道": "hokkaido",
+  "青森県": "aomori",
+  "岩手県": "iwate",
+  "宮城県": "miyagi",
+  "秋田県": "akita",
+  "山形県": "yamagata",
+  "福島県": "fukushima",
+  "茨城県": "ibaraki",
+  "栃木県": "tochigi",
+  "群馬県": "gunma",
+  "埼玉県": "saitama",
+  "千葉県": "chiba",
+  "東京都": "tokyo",
+  "神奈川県": "kanagawa",
+  "新潟県": "niigata",
+  "富山県": "toyama",
+  "石川県": "ishikawa",
+  "福井県": "fukui",
+  "山梨県": "yamanashi",
+  "長野県": "nagano",
+  "岐阜県": "gifu",
+  "静岡県": "shizuoka",
+  "愛知県": "aichi",
+  "三重県": "mie",
+  "滋賀県": "shiga",
+  "京都府": "kyoto",
+  "大阪府": "osaka",
+  "兵庫県": "hyogo",
+  "奈良県": "nara",
+  "和歌山県": "wakayama",
+  "鳥取県": "tottori",
+  "島根県": "shimane",
+  "岡山県": "okayama",
+  "広島県": "hiroshima",
+  "山口県": "yamaguchi",
+  "徳島県": "tokushima",
+  "香川県": "kagawa",
+  "愛媛県": "ehime",
+  "高知県": "kochi",
+  "福岡県": "fukuoka",
+  "佐賀県": "saga",
+  "長崎県": "nagasaki",
+  "熊本県": "kumamoto",
+  "大分県": "oita",
+  "宮崎県": "miyazaki",
+  "鹿児島県": "kagoshima",
+  "沖縄県": "okinawa",
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// main関数(地図描画)
+// 地図描画
 //   lat, lng = geolonia.Mapの中心地として指定
-//   pref_name = geojsonのディレクトリのprefix (都道府県名)
+//   pref_name = 都道府県名(例: 栃木県) => geojsonの格納ディレクトリと対応するので必須
 //   debug_mode = _debug/ 以下のgeojsonを見るかどうか(debug用のgeojsonはファイルサイズがでかい)
-const main = (lat, lng, pref_name, debug_mode=false, zoom=15) => {
-  // console.log('lat: ' + lat)
-  // console.log('lng: ' + lng)
-  // console.log('pref_name: ' + pref_name)
+const draw = (lat, lng, pref_name, debug_mode=false, zoom=15) => {
+  console.log('lat: ' + lat)
+  console.log('lng: ' + lng)
+  console.log('pref_name: ' + pref_name)
 
   // 地図の設定
   const map = new geolonia.Map({
@@ -107,7 +161,7 @@ const main = (lat, lng, pref_name, debug_mode=false, zoom=15) => {
     map.setStyle(`https://raw.githubusercontent.com/${style}/master/style.json`)
   }
 
-  // Marker用アイコンを読み込み(genre[1-10].png)
+  // Marker用アイコン画像を読み込み(genre[1-10].png)
   for (const [key, _] of Object.entries(genres)) {
     map.loadImage(`/img/genre${key}.png`, function (error, res) {
       map.addImage(`icon-image-genre${key}`, res);
@@ -122,7 +176,7 @@ const main = (lat, lng, pref_name, debug_mode=false, zoom=15) => {
     map.getCanvas().style.cursor = '';
   }
   // クリックしたときにPopup()で吹き出しを出す
-  // MEMO: 試してないけど各種HTMLタグとかstyleとか使えそうな気はする(試してないけど)
+  // MEMO: 試してないけど各種HTMLタグとかcssとか使えそうな気はする(試してないけど)
   const click_point_function = (e) => {
     console.log(e)
     const coordinates = e.lngLat;
@@ -131,14 +185,14 @@ const main = (lat, lng, pref_name, debug_mode=false, zoom=15) => {
     const props = e.features[0].properties;
     let popup_html = `<strong>店舗名:</strong> ${props.shop_name}<br>`;   // MEMO: 普通にdlとかの方がよくない…？
     popup_html += `<strong>住所:</strong> ${props.address} <br>`;
+    popup_html += (props.detail_page ? `<a href="${props.detail_page}" target="_blank">[GoTo詳細ページ]</a><br>` : '');
     popup_html += (props.area_name ? `<strong>エリア</strong>: ${props.area_name} <br>` : '');
     popup_html += `<strong>ジャンル:</strong> ${props.genre_name} <br>`;
     popup_html += (props.closing_day ? `<strong>定休日:</strong> ${props.closing_day} <br>` : '');
     popup_html += (props.opening_hours ? `<strong>営業時間:</strong> ${props.opening_hours} <br>` : '');
     popup_html += (props.tel ? `<strong>電話番号:</strong> ${props.tel} <br>` : '');
     popup_html += (props.offical_page ? `<a href="${props.offical_page}" target="_blank">[公式HP]</a><br>` : '');
-    popup_html += (props.detail_page ? `<a href="${props.detail_page}" target="_blank">[GoTo詳細ページ]</a><br>` : '');
-    popup_html += `<a href="${props['GoogleMap']}" target="_blank">【GoogleMap】</a><br>`;
+    popup_html += `<a href="${props['google_map_url']}" target="_blank">【GoogleMap】</a><br>`;
     // TODO: geojsonで空のデータ項目もキーが出力されている(例: "closing_day": """,)が、
     // データサイズの観点からは空データの場合、キー自体なしの方が適切かもしれない。以下のような書き方しても問題ないので、
     // js側の実装上はどっちでも問題ない。
@@ -152,11 +206,12 @@ const main = (lat, lng, pref_name, debug_mode=false, zoom=15) => {
       popup_html += `lng: ${geometry.coordinates[1]} <br>`;
       popup_html += (props.zip_code ? `zip_code: ${props.zip_code} <br>` : '');
       popup_html += `normalized_address: ${props.normalized_address} <br>`;
-      popup_html += `_ジオコーディングの結果スコア: ${props['_ジオコーディングの結果スコア']} <br>`;
-      popup_html += `_ジオコーディング結果に紐づく住所情報(name): ${props['_ジオコーディング結果に紐づく住所情報(name)']} <br>`;
-      popup_html += `_ジオコーディングで無視された住所情報(tail): ${props['_ジオコーディングで無視された住所情報(tail)']} <br>`;
-      popup_html += `<a href="${props['_国土地理院地図のURL']}" target="_blank">(国土地理院地図)</a>` + '<br>';
-      // MEMO: jsonベタでもいいのではって気もしてきた…
+      popup_html += `_ジオコーディングの結果スコア: ${props['_dams_score']} <br>`;
+      popup_html += `_ジオコーディング結果に紐づく住所情報(name): ${props['_dams_name']} <br>`;
+      popup_html += `_ジオコーディングで無視された住所情報(tail): ${props['_dams_tail']} <br>`;
+      popup_html += `<a href="${props['_gsi_map_url']}" target="_blank">(国土地理院地図)</a>` + '<br>';
+      // MEMO: debugのときはjsonベタ出しでいいんじゃって気もしてきたが、試してみたらURL系が悲惨だった…
+      // popup_html += JSON.stringify(props, null, 2)
     }
 
     // 吹き出し表示
@@ -175,14 +230,31 @@ const main = (lat, lng, pref_name, debug_mode=false, zoom=15) => {
 
   // map init on loading
   map.on('load', function () {
-    const prefix = pref_name;
+    // jp => en  (例: "東京都" => "tokyo")
+    const prefix = prefs[pref_name];
+    document.getElementById('goto_title').innerHTML = `後藤イー太 @ ${pref_name}`;
+
+    // _error.jsonをテキストエリアに適当に出す
+    // FIXME: 雑がすぎる
+    fetch(`/geojson/${prefix}/_error.json`, {
+      method: "GET",
+    }).then(response => response.json())
+    .then(json => {
+      document.getElementById('error_json_duplicated').value = JSON.stringify(json.duplicated, null, 2);
+      document.getElementById('error_json_error').value = JSON.stringify(json.error, null, 2);
+      // MEMO: 重複エラー(duplicated)とその他のエラー(NormalizeError, GeoCodeError)とかを分けてもよい
+      // あとは別に全部出す必要ない気もする
+    });
 
     for (const [genre_id, genre] of Object.entries(genres)) {
       // FIEME: クラス名とかレイヤ名とかいい加減すぎる
       const layer_id = `layer-${genre_id}`;
 
       // GeoJSON読み込み
-      const gjson = debug_mode ? `/geojson/geojson/${prefix}/_debug/genre${genre_id}.geojson` : `/geojson/geojson/${prefix}/genre${genre_id}.geojson`;
+      const debug_dir = debug_mode ? '_debug/' : ''
+      // const gjson = `/geojson/${prefix}/${debug_dir}genre${genre_id}.geojson`;
+      const gjson = `https://raw.githubusercontent.com/terukizm/goto-eater-data/main/output/${prefix}/${debug_dir}genre${genre_id}.geojson`
+
       // console.log(gjson);
 
       map.addSource(`datasource-${genre_id}`, {
@@ -228,7 +300,7 @@ const main = (lat, lng, pref_name, debug_mode=false, zoom=15) => {
       });
 
       // 左袖に表示されるジャンル別メニューの設定
-      // TODO: 全選択/全選択解除ボタンは実際に触ってるとしばしばほしくなる
+      // TODO: 全選択/全選択解除ボタンは実際に触ってるとほしくなる
       const link = document.createElement('a');
       link.href = '#';
       link.id = layer_id;
@@ -269,7 +341,7 @@ const main = (lat, lng, pref_name, debug_mode=false, zoom=15) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // 1. 地名を指定(?place=地名)
 
-// Mock: CommuniyGeoCoderのgetLatLng()のモック
+// MEMO: CommunityGeoCoderのgetLatLng()のモック
 // const getLatLng = (arg1, _callback) => {
 //   return _callback({addr: "栃木県のどっか(ダミー)", lat: "36.303", lng: "139.588", code: "09204"});
 // }
@@ -279,28 +351,31 @@ const main = (lat, lng, pref_name, debug_mode=false, zoom=15) => {
 const callback_func = (res) => {
   console.log(res)
   const pref_name = res.addr.match(/^(.{2,3}[都道府県]).*$/)[1];
-  main(res.lat, res.lng, pref_name);
+  draw(res.lat, res.lng, pref_name);
 }
 const error_callback_func = (err) => {
   console.log(err)
   // TODO: エラー処理
 }
 
+// MEMO: Community GeoCoderの挙動として、一般的な駅名とかに紐づくデータが入っていないので
+// 例えば「錦糸町」のように入力しても結果が帰ってこない。住所を入れてやらないとダメ。
+// @see https://community-geocoder.geolonia.com/#12/35.68124/139.76713
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// 2. 現在地から取る場合(?placeが未指定)
+// 2. 現在地から取る場合(?placeが未指定の場合)
 
 const this_place_function = (lat, lng) => {
   // TODO: XHRで時間がかかるからmap描画のdivのあたりに適当にloading...みたいなの入れてやるとやさしみがある
 
-  // 農研APIを叩く(めんどいからMockにしてある)
-  // $ curl -sS "https://aginfo.cgk.affrc.go.jp/ws/rgeocode.php?json&lat=36.305&lon=139.580"
-  fetch("/mock/dummy.json", {
+  // 農研APIを叩く(めんどいときはMock使っても良い)
+  // const endpoint = "/mock/dummy_okinawa.json"
+  const endpoint = `https://aginfo.cgk.affrc.go.jp/ws/rgeocode.php?json&lat=${lat}&lon=${lng}`
+  fetch(endpoint, {
     method: "GET",
   }).then(response => response.json())
   .then(json => {
-    const pref_name = json.result.prefecture.pname;
-    console.log(pref_name);
-    main(lat, lng, pref_name);
+    draw(json.result.local[0].latitude, json.result.local[0].longitude, json.result.prefecture.pname);
   });
 }
 
@@ -316,8 +391,7 @@ const current_geolocation_error = (err) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // QueryParameter取得による動作モード指定
-// TODO: 本当はこっちがmain()...
-const init = () => {
+const main = () => {
   const params = new URLSearchParams(window.location.search);
   // ?_debug(?debug) があれば debug_mode === true (自分でも間違えるからエイリアス張ってる)
   const debug = (params.has('_debug') || params.has('debug'))
@@ -331,61 +405,24 @@ const init = () => {
   if (mode0) {
     console.log('MODE ZERO');
     // 佐野市
-    main(36.305, 139.580, '栃木県', true);
+    draw(36.305, 139.580, '栃木県', true);
     // MEMO: こういう書き方js(ES？)なかったっけ…
     // 亀戸
-    // main(lat=35.6973225, lng=139.8265658, pref_name='東京都', debug_mode);
-
+    // draw(lat=35.6973225, lng=139.8265658, pref_name='東京都', debug_mode);
     return
   }
 
-  // FIXME: debugモード指定が引き渡ってないよ
+  // FIXME: debugモード指定が引き渡ってないよ (実装が悪いんだよ)
   if (place) {
-    // 1. 地名指定で取る場合(?place=地名)
+    // 1. 地名指定で取る場合(?place={住所} が指定されている)
     // @see https://github.com/geolonia/community-geocoder#getlatlngaddress-callback-errorcallback
     getLatLng(place, callback_func, error_callback_func);
     // TODO: ジオコーディングに失敗した場合(例: "?place=聖蹟桜ヶ丘")のエラーハンドリング
+    // -> 聖蹟桜ヶ丘は住所としては存在してない(駅名だから)
   } else {
     // 2. 現在地から取る場合(?placeが未指定)
     navigator.geolocation.getCurrentPosition(current_geolocation_success, current_geolocation_error);
   }
 }
 
-init();
-
-
-// latlngの値のメモ
-// const place_list = {
-//   '大阪駅周辺': {
-//     'coordinates': [135.4959506, 34.7024854],
-//     'zoom': 16,
-//     'prefix': '27_osaka',
-//   },
-//   '山梨県甲府市': {
-//     'coordinates': [138.5687848, 35.666674],
-//     'zoom': 16,
-//   },
-//   '埼玉県草加市': {
-//     'coordinates': [139.777649, 35.812065],
-//     'zoom': 14,
-//   },
-//   '群馬県高崎駅周辺': {
-//     'coordinates': [139.0126623, 36.3228267],
-//     'zoom': 14,
-//   },
-//   '奈良県曽爾村': {
-//     'coordinates': [136.1092048, 34.4905156],
-//     'zoom': 12,
-//     'prefix': '29_nara',
-//   },
-//   '宮崎県': {
-//     'coordinates': [131.4178932, 31.9061487],
-//     'zoom': 15,
-//     'prefix': '45_miyazaki',
-//   },
-//   'まぞくの聖地': {
-//     'coordinates': [139.4467943, 35.6496139],
-//     'zoom': 15,
-//     'prefix': '13_tokyo',
-//   },
-// };
+main();
