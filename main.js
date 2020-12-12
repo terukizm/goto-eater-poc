@@ -9,7 +9,7 @@
 
 
 // 適当に決めた10ジャンル
-// MEMO: テキストにしたときにちょっと色薄い
+// MEMO: テキストラベルでちょっと色薄いのがいくつか
 //
 // 1	居酒屋・ダイニングバー・バル	#FAB462
 // 2	和食	#72CB7F
@@ -31,7 +31,7 @@ const genres = {
     color: 'rgba(114,203,127,1)',
   },
   3: {
-    name: '洋食・フレンチ・イタリアン',
+    name: '洋食',
     color: 'rgba(107,160,255,1)',
   },
   4: {
@@ -39,7 +39,7 @@ const genres = {
     color: 'rgba(240,56,0,1)',
   },
   5: {
-    name: '麺類・餃子・丼物',
+    name: '麺類(+餃子)',
     color: 'rgba(199,185,73,1)',
   },
   6: {
@@ -64,8 +64,7 @@ const genres = {
   }
 }
 
-// @see ISO 3166-2
-//
+// @see ISO 3166-2 とか (なんかいいライブラリないですか)
 // ライブラリ探して使い方読むよりベタ書きの方が早そうだったので…
 // https://so-zou.jp/web-app/tech/data/code/japanese-prefecture.htm#no1
 const prefs = {
@@ -121,12 +120,12 @@ const prefs = {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // 地図描画
 //   lat, lng = geolonia.Mapの中心地として指定
-//   pref_name = 都道府県名(例: 栃木県) => geojsonの格納ディレクトリと対応するので必須
+//   pref_name_ja = 都道府県名(例: 栃木県) => geojsonの格納ディレクトリと対応するので必須
 //   debug_mode = _debug/ 以下のgeojsonを見るかどうか(debug用のgeojsonはファイルサイズがでかい)
-const draw = (lat, lng, pref_name, debug_mode=false, zoom=15) => {
+const draw = (lat, lng, pref_name_ja, debug_mode=false, zoom=15) => {
   console.log('lat: ' + lat)
   console.log('lng: ' + lng)
-  console.log('pref_name: ' + pref_name)
+  console.log('pref_name_ja: ' + pref_name_ja)
 
   // 地図の設定
   const map = new geolonia.Map({
@@ -154,7 +153,6 @@ const draw = (lat, lng, pref_name, debug_mode=false, zoom=15) => {
   // _debug/以下のgeojsonを読んでデバッグ用のpopup(情報量が多い)を表示させるなどする
   // const popup_htmlの中身組み立てとか変えてやるのでよしなにうーんだるい
   if (debug_mode) {
-    console.log('🔧 debug mode on')
     // debugモードを見分けやすいようにMapのスタイルを変更
     // const style = 'geolonia/notebook';  // original simple notebook style
     const style = 'terukizm/notebook';  // ダークモード風味
@@ -231,8 +229,8 @@ const draw = (lat, lng, pref_name, debug_mode=false, zoom=15) => {
   // map init on loading
   map.on('load', function () {
     // jp => en  (例: "東京都" => "tokyo")
-    const prefix = prefs[pref_name];
-    document.getElementById('goto_title').innerHTML = `後藤イー太 @ ${pref_name}`;
+    const prefix = prefs[pref_name_ja];
+    document.getElementById('goto_title').innerHTML = `後藤イー太 @ ${pref_name_ja}`;
 
     // _error.jsonをテキストエリアに適当に出す
     // FIXME: 雑がすぎる
@@ -242,8 +240,9 @@ const draw = (lat, lng, pref_name, debug_mode=false, zoom=15) => {
     .then(json => {
       document.getElementById('error_json_duplicated').value = JSON.stringify(json.duplicated, null, 2);
       document.getElementById('error_json_error').value = JSON.stringify(json.error, null, 2);
-      // MEMO: 重複エラー(duplicated)とその他のエラー(NormalizeError, GeoCodeError)とかを分けてもよい
+      // MEMO: 重複エラー(duplicated)とその他のエラー(NormalizeError, GeoCodeError, ZipCodeなんちゃら)とかを分けてもよい
       // あとは別に全部出す必要ない気もする
+      // TODO: 重複エラーもその他エラーもない場合、_error.jsonは生成されないので404だったときの対応を入れる
     });
 
     for (const [genre_id, genre] of Object.entries(genres)) {
@@ -252,10 +251,17 @@ const draw = (lat, lng, pref_name, debug_mode=false, zoom=15) => {
 
       // GeoJSON読み込み
       const debug_dir = debug_mode ? '_debug/' : ''
-      // const gjson = `/geojson/${prefix}/${debug_dir}genre${genre_id}.geojson`;
-      const gjson = `https://raw.githubusercontent.com/terukizm/goto-eater-data/main/output/${prefix}/${debug_dir}genre${genre_id}.geojson`
+      // MEMO: 定期的にcrawlerで自動生成してgithub上に置いてあるやつから見る場合
+      // const gjson = `https://raw.githubusercontent.com/terukizm/goto-eater-data/main/output/${prefix}/${debug_dir}genre${genre_id}.geojson`
+      // MEMO: 直置きしてある/geojson/tokyo とかを見る場合
+      const gjson = `/geojson/${prefix}/${debug_dir}genre${genre_id}.geojson`;
 
-      // console.log(gjson);
+      // TODO: 対応するジャンルコードのGeoJSONがない場合がある。(例: 静岡はジャンル6(各国料理)がない。カレーとかはその他扱いになってる)
+      // そういった場合はどうしたもんか…
+      // 案1: 事前にHEADリクエストとかで存在確認(20x)しておく -> だるない？？？
+      // 案2: GeoJSON作るときに空ファイル作っておく
+      // 前者はデータがないジャンル(layer)はdisabledにするとかの対応がしやすい。後者は実装が楽。
+      // 前者を試してみて、ローディングに時間かかりそうなら後者でいくか…？ (でもUI側の細かいことをやりたくない…)
 
       map.addSource(`datasource-${genre_id}`, {
         type: 'geojson',
@@ -346,12 +352,12 @@ const draw = (lat, lng, pref_name, debug_mode=false, zoom=15) => {
 //   return _callback({addr: "栃木県のどっか(ダミー)", lat: "36.303", lng: "139.588", code: "09204"});
 // }
 
-// getLatLngで取ったジオコーディング結果から、lat, lng, pref_nameを取って地図描画
+// getLatLngで取ったジオコーディング結果から、lat, lng, pref_name_jaを取って地図描画
 // @see https://github.com/geolonia/community-geocoder#getlatlngaddress-callback-errorcallback
 const callback_func = (res) => {
   console.log(res)
-  const pref_name = res.addr.match(/^(.{2,3}[都道府県]).*$/)[1];
-  draw(res.lat, res.lng, pref_name);
+  const pref_name_ja = res.addr.match(/^(.{2,3}[都道府県]).*$/)[1];
+  draw(res.lat, res.lng, pref_name_ja);
 }
 const error_callback_func = (err) => {
   console.log(err)
@@ -400,15 +406,15 @@ const main = () => {
   console.log('debug_mode=' + debug);
   console.log('place=' + place);
 
-  // 0. lat, lng, pref_nameのハードコーディング(主に地図描画確認用)
-  // ?place=　実装後はあんまり使わないかも
+  // 0. lat, lng, pref_name_jaのハードコーディング(主に地図描画確認用)
+  // ?place=　実装したからあんまり使わないかも
   if (mode0) {
     console.log('MODE ZERO');
     // 佐野市
     draw(36.305, 139.580, '栃木県', true);
     // MEMO: こういう書き方js(ES？)なかったっけ…
     // 亀戸
-    // draw(lat=35.6973225, lng=139.8265658, pref_name='東京都', debug_mode);
+    // draw(lat=35.6973225, lng=139.8265658, pref_name_ja='東京都', debug_mode);
     return
   }
 
@@ -418,7 +424,7 @@ const main = () => {
     // @see https://github.com/geolonia/community-geocoder#getlatlngaddress-callback-errorcallback
     getLatLng(place, callback_func, error_callback_func);
     // TODO: ジオコーディングに失敗した場合(例: "?place=聖蹟桜ヶ丘")のエラーハンドリング
-    // -> 聖蹟桜ヶ丘は住所としては存在してない(駅名だから)
+    // MEMO: 「聖蹟桜ヶ丘」は住所としては存在してないのでジオコーディングで取れない(駅名だから)
   } else {
     // 2. 現在地から取る場合(?placeが未指定)
     navigator.geolocation.getCurrentPosition(current_geolocation_success, current_geolocation_error);
