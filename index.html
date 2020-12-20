@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <title>後藤イー太</title>
@@ -11,32 +12,48 @@
   <link rel="manifest" href="manifest.json" /> -->
   <!-- OGP系もやってないよ-->
 </head>
+
 <body>
-  <!-- 基本main.js側で指定-->
   <nav id="menu"></nav>
+  <nav id="sub_menu"></nav>
+
+  <!-- 基本main.js側で指定-->
   <div id="map"></div>
 
   <h1 id="goto_title">後藤イー太</h1>
+  <div id="toolbox">
+    <p>📔 {この辺に、各自治体の公式サイトからのお知らせを表示させる} 📔</p>
+  </div>
+
   <p>注意だよ:</p>
   <ul>
-    <li><a href="http://newspat.csis.u-tokyo.ac.jp/geocode/modules/dams/index.php?content_id=1">DAMS</a>と<a href="https://nlftp.mlit.go.jp/isj/index.html">国土交通省の位置参照情報</a>を使ってて、ジオコーディング精度に限界があるから場所は参考程度にね</li>
+    <li><a href="http://newspat.csis.u-tokyo.ac.jp/geocode/modules/dams/index.php?content_id=1">DAMS</a>と<a
+        href="https://nlftp.mlit.go.jp/isj/index.html">国土交通省の位置参照情報</a>を使ってて、ジオコーディング精度に限界があるから場所は参考程度にね</li>
+    <li>TODO: 利用規約的なものとか言い訳とかを書く</li>
   </ul>
 
-  <h2>雑リンク</h2>
+  <hr>
+
+  <p>開発用</p>
+
+  <h3>■開発用の雑リンク</h3>
   <ul>
     <li><a href="./?place=亀戸">KMID</a></li>
-    <li><a href="./?place=佐野市&mode0">佐野(デバッグモード)</a></li>
-    <li><a href="./?place=沖縄市">OKINAWA</a></li>
-    <li><a href="./?place=千葉市花見川区幕張">幕張</a></li>
+    <li><a href="./?place=佐野市&debug">佐野(デバッグモード)</a></li>
+    <li><a href="./?place=沖縄市">約束の地・OKINAWA</a></li>
+    <li><a href="./?place=大阪府大阪市中央区道頓堀">道頓堀(大阪・ジャンル8なし)</a></li>
+    <li><a href="./?lat=35.69483751107386&lng=139.84308645129204">亀戸にあるマンマパスタ周辺(latlng指定)</a></li>
+    <li><a href="./?place=青森県弘前市駅前町">青森県(ジャンル情報なし)</a></li>
+    <li><a href="./?place=千葉市幕張市">千葉県幕張市(存在しない住所)</a></li>
   </ul>
 
-  <h3>元データが重複してるやつ</h3>
-  <textarea id="error_json_duplicated" style="width: 95%; height: 20em;"></textarea>
-  <h3>元データがエラーになってるやつ</h3>
-  <textarea id="error_json_error" style="width: 95%; height: 20em;"></textarea>
+  <h3>■エラーになっていてマッピングできていない店舗</h3>
+  <textarea id="errors_textarea" style="width: 97%; height: 20em;"></textarea>
 
-  <script type="text/javascript" src="https://api.geolonia.com/v1/embed?geolonia-api-key=cc6d229f94224d9290b5e6018fc302d4"></script>
+  <script type="text/javascript"
+    src="https://api.geolonia.com/v1/embed?geolonia-api-key=cc6d229f94224d9290b5e6018fc302d4"></script>
   <script type="text/javascript" src="https://cdn.geolonia.com/community-geocoder.js"></script>
   <script type="text/javascript" src="./main.js"></script>
 </body>
+
 </html>

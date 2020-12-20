@@ -10,8 +10,8 @@ html, body {
   height: 70%;
 }
 
-.mapboxgl-popup {
-  max-width: 400px;
+.mapboxgl-popup-content {
+  width: 400px;
 }
 
 /* side menu */
@@ -20,7 +20,7 @@ html, body {
   background: #ffffff;
   position: absolute;
   z-index: 1;
-  top: 8px;
+  top: 58px;
   left: 10px;
   width: 150px;
   border: 1px solid rgba(0, 0, 0, 0.4);
@@ -34,15 +34,10 @@ html, body {
   display: block;
   height: 40px;
   margin: 0;
-  padding: 0;
   padding: 10px;
   text-decoration: none;
   border-bottom: 1px solid rgba(0, 0, 0, 0.25);
   text-align: center;
-}
-
-#menu a:last-child {
-  border: none;
 }
 
 #menu a:hover {
@@ -50,11 +45,110 @@ html, body {
   color: #404040;
 }
 
-#menu a.active {
-  background: #b33b3b;
-  color: #ffffff;
+#menu a:last-child {
+  border: none;
 }
 
-#menu a.active:hover {
-  background: #eb1717;
+/* side menu */
+
+#sub_menu {
+  background: #ffffff;
+  position: absolute;
+  z-index: 1;
+  top: 8px;
+  left: 10px;
+  /* width: 150px; */
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  font-family: 'Noto Sans Regular', sans-serif;
+  visibility: hidden;
+}
+
+#sub_menu a {
+  font-size: 13px;
+  color: #404040;
+  display: inline-block;
+  height: 20px;
+  width: 55px;
+  margin: 0;
+  padding: 10px;
+  text-decoration: none;
+  border-right: 1px solid rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+
+#sub_menu a:last-child {
+  border: none;
+}
+
+
+/* layer1 〜 layer10 */
+
+#menu > a#layer-1.active {
+  background: rgba(250,180,98,1);
+}
+#menu > a#layer-1.active:hover {
+  background: rgba(250,180,98,0.5);
+}
+
+#menu > a#layer-2.active {
+  background: rgba(114,203,127,1);
+}
+#menu > a#layer-2.active:hover {
+  background: rgba(114,203,127,0.5);
+}
+
+#menu > a#layer-3.active {
+  background: rgba(107,160,255,1);
+}
+#menu > a#layer-3.active:hover {
+  background:rgba(107,160,255,0.5);
+}
+
+#menu > a#layer-4.active {
+  background: rgba(240,56,0,1);
+}
+#menu > a#layer-4.active:hover {
+  background: rgba(240,56,0,0.5);
+}
+
+#menu > a#layer-5.active {
+  background: rgba(199,185,73,1);
+}
+#menu > a#layer-5.active:hover {
+  background: rgba(199,185,73,0.5);
+}
+
+#menu > a#layer-6.active {
+  background: rgba(232,108,255,1);
+}
+#menu > a#layer-6.active:hover {
+  background: rgba(232,108,255,0.5);
+}
+
+#menu > a#layer-7.active {
+  background: rgba(171,148,101,1);
+}
+#menu > a#layer-7.active:hover {
+  background: rgba(171,148,101,0.5);
+}
+
+#menu > a#layer-8.active {
+  background: rgba(133,190,204,1);
+}
+#menu > a#layer-8.active:hover {
+  background: rgba(133,190,204,0.5);
+}
+
+#menu > a#layer-9.active {
+  background: rgba(255,161,196,1);
+}
+#menu > a#layer-9.active:hover {
+  background: rgba(255,161,196,0.5);
+}
+
+#menu > a#layer-10.active {
+  background: rgba(128,128,128,1);
+}
+#menu > a#layer-10.active:hover {
+  background: rgba(128,128,128,0.5);
 }
