@@ -11,7 +11,6 @@ body {
   height: 70%;
 }
 
-
 /* for mobile */
 @media screen and (min-width: 0px) {
   .mapboxgl-popup-content {
@@ -21,18 +20,18 @@ body {
     width: 75px;
   }
   #menu a {
-    font-size: 0.3vh;
+    font-size: 8px;
     height: 40px;
     padding: 2px;
   }
   #sub_menu a {
-    font-size: 0.3vw;
+    font-size: 8px;
     width: 40px;
     padding: 2px;
   }
 }
 
-/* for PC*/
+/* for PC */
 @media screen and (min-width: 600px) {
   .mapboxgl-popup-content {
     width: 400px;
