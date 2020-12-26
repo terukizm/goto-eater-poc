@@ -539,6 +539,10 @@ const draw = (lat, lng, pref_name_ja, debug = false, zoom = DEFAULT_ZOOM) => {
         data: geojson_path
       });
 
+      // アイコン画像のオリジナルサイズは32x32なので、スマホ用には1/2にする
+      const icon_size = window.matchMedia('(min-width: 600px)').matches ? 1 : 0.5
+      console.log(`🍣🍣 ${icon_size}`)
+
       // レイヤー作成
       map.addLayer({
         "id": layer_id,
@@ -549,7 +553,7 @@ const draw = (lat, lng, pref_name_ja, debug = false, zoom = DEFAULT_ZOOM) => {
           // アイコン画像(Marker画像)の設定
           "icon-image": `marker-genre${i}`,
           "icon-allow-overlap": true, // この指定がないとlatlngが重なったときにアイコンが確実に上書きされてしまう
-          "icon-size": 1.0, // アイコン画像のオリジナルサイズは32x32。サイズを微調整したい場合は倍率変えてみるとよい
+          "icon-size": icon_size,
           // アイコンの下にshop_nameをラベル表示させる設定
           // (フォント指定まわりについては、ドキュメントがあまりない)
           'text-field': "{shop_name}",
