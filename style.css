@@ -11,8 +11,45 @@ body {
   height: 70%;
 }
 
-.mapboxgl-popup-content {
-  width: 400px;
+
+/* for mobile */
+@media screen and (min-width: 0px) {
+  .mapboxgl-popup-content {
+    width: 200px;
+  }
+  #menu {
+    width: 75px;
+  }
+  #menu a {
+    font-size: 0.3vh;
+    height: 40px;
+    padding: 2px;
+  }
+  #sub_menu a {
+    font-size: 0.3vw;
+    width: 40px;
+    padding: 2px;
+  }
+}
+
+/* for PC*/
+@media screen and (min-width: 600px) {
+  .mapboxgl-popup-content {
+    width: 400px;
+  }
+  #menu {
+    width: 150px;
+  }
+  #menu a {
+    font-size: 13px;
+    height: 40px;
+    padding: 10px;
+  }
+  #sub_menu a {
+    font-size: 13px;
+    width: 55px;
+    padding: 10px;
+  }
 }
 
 /* side menu */
@@ -23,19 +60,15 @@ body {
   z-index: 1;
   top: 58px;
   left: 10px;
-  width: 150px;
   border: 1px solid rgba(0, 0, 0, 0.4);
   font-family: "Noto Sans Regular", sans-serif;
   visibility: hidden;
 }
 
 #menu a {
-  font-size: 13px;
   color: #404040;
   display: block;
-  height: 40px;
   margin: 0;
-  padding: 10px;
   text-decoration: none;
   border-bottom: 1px solid rgba(0, 0, 0, 0.25);
   text-align: center;
@@ -58,20 +91,16 @@ body {
   z-index: 1;
   top: 8px;
   left: 10px;
-  /* width: 150px; */
   border: 1px solid rgba(0, 0, 0, 0.4);
   font-family: "Noto Sans Regular", sans-serif;
   visibility: hidden;
 }
 
 #sub_menu a {
-  font-size: 13px;
   color: #404040;
   display: inline-block;
   height: 20px;
-  width: 55px;
   margin: 0;
-  padding: 10px;
   text-decoration: none;
   border-right: 1px solid rgba(0, 0, 0, 0.25);
   text-align: center;
