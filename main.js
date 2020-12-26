@@ -682,7 +682,7 @@ const initMap = (lat, lng, zoom, debug) => {
 
   // マーカー用アイコン画像を読み込み(/img/genre[1-10].png)
   for (const [key, _] of Object.entries(GENRES)) {
-    map.loadImage(`/img/marker/genre${key}.png`, (error, res) => {
+    map.loadImage(`img/marker/genre${key}.png`, (error, res) => {
       map.addImage(`marker-genre${key}`, res);
     });
   }
