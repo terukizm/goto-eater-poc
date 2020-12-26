@@ -803,7 +803,7 @@ const addressInputComponent = (params) => {
   const place_form = document.createElement('form');
   place_form.addEventListener('submit', (event) => {
     params.set('place', document.getElementById('place-input').value) // 上書き
-    window.location.href = '/?' + params.toString();
+    window.location.href = './?' + params.toString();
     event.preventDefault();
   });
   place_form.appendChild(place_input);
