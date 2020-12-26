@@ -488,7 +488,7 @@ const draw = (lat, lng, pref_name_ja, debug = false, zoom = DEFAULT_ZOOM) => {
 
   // GeoJSON置き場
   // @see https://github.com/terukizm/goto-eater-data/tree/main/data/output/osaka
-  const geojson_base = _USE_LOCAL_GEOJSON ? `/geojson/${prefix}` : `https://raw.githubusercontent.com/terukizm/goto-eater-data/main/data/output/${prefix}`;
+  const geojson_base = _USE_LOCAL_GEOJSON ? `./geojson/${prefix}` : `https://raw.githubusercontent.com/terukizm/goto-eater-data/main/data/output/${prefix}`;
 
   // Mapインスタンス初期化、onload処理
   const map = initMap(lat, lng, zoom, debug)
